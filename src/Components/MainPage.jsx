@@ -20,13 +20,13 @@ export default function MainPage() {
     }
 
     const interval = setInterval(() => {
-      setProgress(p => (p >= 100 ? 0 : Math.min(100, p + 1)));
-    }, 80);
+      setProgress(p => (p >= 100 ? 0 : Math.min(100, p + 0.5)));
+    }, 20);
     return () => clearInterval(interval);
   }, [emotion]);
 
   return (
-    <div className="relative">
+    <div className="relative overflow-clip">
       {/* Back button */}
       <motion.div
         whileHover={{ scale: 1.1 }}
@@ -73,7 +73,7 @@ export default function MainPage() {
             exit={{ opacity: 0, y: 20 }}
             className="absolute bottom-0 left-0 right-0 w-full z-50"
           >
-            <ProgressBar progress={progress} label="Processing" />
+            <ProgressBar progress={progress} />
           </motion.div>
         )}
       </AnimatePresence>

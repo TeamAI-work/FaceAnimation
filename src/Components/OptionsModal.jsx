@@ -1,11 +1,23 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, color } from "framer-motion";
 import {
   X, CreditCard, User, ShieldCheck, HelpCircle,
   ChevronRight, ChevronLeft, Moon, Sun,
   Sparkles, Check, Bell, Camera, Mic, MapPin,
   BookOpen, MessageCircle, Code2, ExternalLink,
+  Mic2,
+  Play,
+  Phone,
+  AppWindow,
+  Car,
+  LayoutGrid,
+  Mars,
+  Venus,
 } from "lucide-react";
 import { useState } from "react";
+import ContactForm from "./ContactForm";
+import PrivacyPolicy from "./PrivacyPolicy";
+import TermsOfService from "./TermsOfService";
+import UpgradeModal from "./UpgradeModal";
 
 /* ────────────────────────────────────────
    SHARED PRIMITIVES
@@ -52,7 +64,7 @@ function SectionTitle({ children }) {
 ──────────────────────────────────────── */
 
 /* BILLING & ACCOUNT (merged) */
-function BillingAccountPanel() {
+function BillingAccountPanel({ onUpgrade }) {
   const [name, setName] = useState("User");
   const [editing, setEditing] = useState(false);
   const [dark, setDark] = useState(true);
@@ -92,31 +104,58 @@ function BillingAccountPanel() {
       <SectionTitle>Current Plan</SectionTitle>
       <div className="relative px-5 py-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-400/5 border border-emerald-400/20 overflow-hidden">
         <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-emerald-400 blur-[50px] opacity-10" />
-        <p className="text-[11px] font-bold uppercase tracking-widest text-emerald-400 mb-1">Free Tier</p>
-        <p className="text-2xl font-bold text-white">$0 <span className="text-sm font-normal text-white/40">/ month</span></p>
+        <p className="text-[11px]  mb-1 flex justify-between">
+          <span className="font-bold uppercase tracking-widest text-emerald-400">
+            Free Tier
+          </span>
+          <span className="text-gray-400">
+            Current plan
+          </span>
+        </p>
+        <p className="text-2xl font-bold text-white mb-3">₹0 <span className="text-sm font-normal text-white/40">/ month</span></p>
+        <p className="flex text-gray-400 text-sm gap-3">
+          <Check size={20} className="text-green-500" /> Limited coversations
+        </p>
+        <p className="flex text-gray-400 text-sm gap-3">
+          <Check size={20} className="text-green-500" /> Limited access
+        </p>
       </div>
 
-      <SectionTitle>Premium Includes</SectionTitle>
-      <div className="px-4 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.07] space-y-2">
-        {features.map(f => (
-          <div key={f} className="flex items-center gap-2 text-[12px] text-white/60">
-            <Check size={13} className="text-emerald-400 flex-shrink-0" /> {f}
-          </div>
-        ))}
+      {/* Paid Plan */}
+      <div 
+        onClick={onUpgrade}
+        className="relative px-5 py-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-purple-400/5 border border-purple-400/20 overflow-hidden cursor-pointer hover:border-purple-400/40 transition-all group"
+      >
+        <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-purple-400 blur-[50px] opacity-10 group-hover:opacity-20 transition-opacity" />
+        <p className="text-[11px]  mb-1 flex justify-between">
+          <span className="font-bold uppercase tracking-widest text-purple-400">
+            Pro Tier
+          </span>
+          <span className="text-gray-400 group-hover:text-purple-300 transition-colors">
+            upgrade now →
+          </span>
+        </p>
+        <p className="text-2xl font-bold text-white mb-3">₹499 <span className="text-sm font-normal text-white/40">/ month</span></p>
+        <p className="flex text-gray-400 text-sm gap-3">
+          <Check size={20} className="text-green-500" /> Unlimited coversations
+        </p>
+        <p className="flex text-gray-400 text-sm gap-3">
+          <Check size={20} className="text-green-500" /> Unlimited access
+        </p>
       </div>
 
-      <motion.button
+      {/* <motion.button
         whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
         className="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 text-white text-[13px] font-bold flex items-center justify-center gap-2 cursor-pointer border-0 shadow-[0_0_24px_rgba(52,211,153,0.3)]"
       >
         <Sparkles size={15} /> Upgrade to Premium
-      </motion.button>
+      </motion.button> */}
 
       {/* ── Danger Zone ── */}
-      <SectionTitle>Danger Zone</SectionTitle>
+      {/* <SectionTitle>Danger Zone</SectionTitle> */}
       <motion.button
         whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-        className="w-full py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-400 text-[12px] font-semibold transition-all cursor-pointer"
+        className="w-full mt-6 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-400 text-[12px] font-semibold transition-all cursor-pointer"
       >
         Sign Out
       </motion.button>
@@ -129,13 +168,63 @@ function PermissionsPanel() {
   const [perms, setPerms] = useState({ camera: false, mic: true, notifications: true, location: false });
   const toggle = key => setPerms(p => ({ ...p, [key]: !p[key] }));
   const items = [
-    { key: "camera",        icon: Camera,   label: "Camera",        desc: "Used for visual input",         color: "text-amber-400", bg: "bg-amber-400/10" },
-    { key: "mic",           icon: Mic,      label: "Microphone",    desc: "Used for voice commands",       color: "text-amber-400", bg: "bg-amber-400/10" },
-    { key: "notifications", icon: Bell,     label: "Notifications", desc: "Alerts & reminders",            color: "text-amber-400", bg: "bg-amber-400/10" },
-    { key: "location",      icon: MapPin,   label: "Location",      desc: "Used for context-aware features", color: "text-amber-400", bg: "bg-amber-400/10" },
+    // { key: "camera", icon: Camera, label: "Camera", desc: "Used for visual input", color: "text-amber-400", bg: "bg-amber-400/10" },
+    { key: "mic", icon: Mic, label: "Microphone", desc: "Used for voice commands", color: "text-amber-400", bg: "bg-amber-400/10" },
+    { key: "notifications", icon: Bell, label: "Notifications", desc: "Alerts & reminders", color: "text-amber-400", bg: "bg-amber-400/10" },
+    { key: "location", icon: MapPin, label: "Location", desc: "Used for context-aware features", color: "text-amber-400", bg: "bg-amber-400/10" },
+    { key: "Calls", icon: Phone, label: "Phone", desc: "Used for voice calls", color: "text-amber-400", bg: "bg-amber-400/10" },
+    { key: "Messages", icon: MessageCircle, label: "Messages", desc: "Used for sending messages", color: "text-amber-400", bg: "bg-amber-400/10" },
+    { key: "Apps", icon: LayoutGrid, label: "Apps", desc: "Used for opening apps", color: "text-amber-400", bg: "bg-amber-400/10" },
+    { key: "Vehicle", icon: Car, label: "Vehicle", desc: "Used for driving", color: "text-amber-400", bg: "bg-amber-400/10" }
   ];
+
+  const [selectedModel, setSelectedModel] = useState("Male");
+  const models = ["Male", "Female"];
+
   return (
     <div className="flex flex-col gap-3">
+      <SectionTitle>Model</SectionTitle>
+      <div className="flex flex-col gap-3">
+        {models.map(model => {
+          const isActive = selectedModel === model;
+          return (
+            <motion.div
+              key={model}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setSelectedModel(model)}
+              className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all cursor-pointer border
+                ${isActive
+                  ? "bg-white/[0.08] border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                  : "bg-white/[0.04] border-white/[0.07] hover:bg-white/[0.06]"}
+              `}
+            >
+              <div className={`w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center transition-colors
+                ${model === "Male" ? "bg-sky-400/20 text-sky-400" : "bg-pink-400/20 text-pink-400"}
+              `}>
+                {model === "Male" ? (
+                  <Mars size={16} />
+                ) : (
+                  <Venus size={16} />
+                )}
+              </div>
+              <div className="flex-1">
+                <p className={`text-[13px] font-semibold transition-colors ${isActive ? "text-zinc-100" : "text-white/60"}`}>
+                  {model}
+                </p>
+                {/* <p className="text-[11px] text-white/40 mt-0.5">Avatar</p> */}
+              </div>
+              <div className={`w-9 h-9 flex-shrink-0 rounded-xl flex items-center justify-center transition-colors
+                ${model === "Male"
+                  ? (isActive ? "bg-sky-400/20 text-sky-400" : "bg-sky-400/10 text-sky-400/60")
+                  : (isActive ? "bg-pink-400/20 text-pink-400" : "bg-pink-400/10 text-pink-400/60")}
+              `}>
+                <Play size={16} fill={isActive ? "currentColor" : "none"} />
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
       <SectionTitle>App Permissions</SectionTitle>
       {items.map(({ key, ...rest }) => (
         <Row key={key} {...rest}>
@@ -147,43 +236,21 @@ function PermissionsPanel() {
 }
 
 /* HELP & INFO (merged) */
-function HelpInfoPanel() {
+function HelpInfoPanel({ onContact, onPrivacy, onTerms, onDocs }) {
   const links = [
-    { icon: BookOpen,       label: "Documentation",   desc: "Guides & API reference",   href: "#" },
-    { icon: MessageCircle,  label: "Community",        desc: "Discord & forums",          href: "#" },
-    { icon: Code2,          label: "GitHub",           desc: "Source code & issues",      href: "#" },
+    { icon: BookOpen, label: "Documentation", desc: "Guides & API reference", href: "#" }
   ];
   const meta = [
-    { label: "Version",  value: "1.0.0"          },
-    { label: "Built By", value: "GMS"            },
-    { label: "Design",   value: "Framer Motion"  },
-    { label: "Library",  value: "React + Vite"   },
+    { label: "Version", value: "1.0.0" },
+    { label: "Built By", value: "GMS" },
   ];
   return (
     <div className="flex flex-col gap-3">
-      {/* ── Resources ── */}
-      <SectionTitle>Resources</SectionTitle>
-      {links.map(({ icon: Icon, label, desc, href }) => (
-        <a key={label} href={href} target="_blank" rel="noreferrer" className="no-underline">
-          <motion.div
-            whileHover={{ x: 4 }}
-            className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/[0.04] border border-white/[0.07] hover:bg-white/[0.07] hover:border-white/[0.12] transition-all cursor-pointer group"
-          >
-            <div className="w-9 h-9 flex-shrink-0 rounded-xl bg-pink-400/10 flex items-center justify-center text-pink-400">
-              <Icon size={16} />
-            </div>
-            <div className="flex-1">
-              <p className="text-[13px] font-semibold text-zinc-100">{label}</p>
-              <p className="text-[11px] text-white/40 mt-0.5">{desc}</p>
-            </div>
-            <ExternalLink size={13} className="text-white/25 group-hover:text-white/60 transition-colors" />
-          </motion.div>
-        </a>
-      ))}
 
       <SectionTitle>Contact Support</SectionTitle>
       <motion.button
         whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+        onClick={onContact}
         className="w-full py-3 rounded-2xl bg-gradient-to-r from-pink-500/20 to-pink-400/10 border border-pink-400/20 hover:border-pink-400/40 text-pink-300 text-[13px] font-semibold flex items-center justify-center gap-2 cursor-pointer transition-all"
       >
         <MessageCircle size={15} /> Send a Message
@@ -201,13 +268,18 @@ function HelpInfoPanel() {
       </div>
 
       <SectionTitle>Legal</SectionTitle>
-      {["Privacy Policy", "Terms of Service"].map(item => (
+      {[
+        { label: "Privacy Policy", action: onPrivacy },
+        { label: "Terms of Service", action: onTerms },
+        { label: "Documentation", action: onDocs }
+      ].map(item => (
         <motion.button
-          key={item}
+          key={item.label}
           whileHover={{ x: 4 }}
-          className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.07] text-[12px] text-white/60 hover:text-white/80 transition-all cursor-pointer group"
+          onClick={item.action}
+          className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.07] text-[12px] text-white/60 hover:text-white hover:border-white/20 transition-all cursor-pointer group"
         >
-          {item}
+          {item.label}
           <ChevronRight size={13} className="text-white/25 group-hover:text-white/60 transition-colors" />
         </motion.button>
       ))}
@@ -245,19 +317,23 @@ function MenuItem({ icon: Icon, label, desc, color, bg, delay = 0, onClick }) {
    ROOT MODAL
 ──────────────────────────────────────── */
 const MENU = [
-  { id: "billing",     icon: CreditCard,  label: "Account & Billing", desc: "Profile, plan & invoices",   color: "text-emerald-400", bg: "bg-emerald-400/10", Panel: BillingAccountPanel },
-  { id: "permissions", icon: ShieldCheck, label: "Permissions",        desc: "Access & privacy controls", color: "text-amber-400",   bg: "bg-amber-400/10",   Panel: PermissionsPanel    },
-  { id: "help",        icon: HelpCircle,  label: "Help & Info",        desc: "Docs, support & about",     color: "text-pink-400",    bg: "bg-pink-400/10",    Panel: HelpInfoPanel       },
+  { id: "billing", icon: CreditCard, label: "Account & Billing", desc: "Profile, plan & invoices", color: "text-emerald-400", bg: "bg-emerald-400/10", Panel: BillingAccountPanel },
+  { id: "permissions", icon: ShieldCheck, label: "Customizations", desc: "Models, Permissions", color: "text-amber-400", bg: "bg-amber-400/10", Panel: PermissionsPanel },
+  { id: "help", icon: HelpCircle, label: "Help & Info", desc: "Docs, support & about", color: "text-pink-400", bg: "bg-pink-400/10", Panel: HelpInfoPanel },
 ];
 
 export default function OptionsModal({ isOpen, onClose }) {
   const [active, setActive] = useState(null);
+  const [showContact, setShowContact] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  const [showUpgrade, setShowUpgrade] = useState(false);
   const current = MENU.find(m => m.id === active);
 
   const slideVariants = {
     enter: dir => ({ opacity: 0, x: dir > 0 ? 60 : -60 }),
-    center:      { opacity: 1, x: 0 },
-    exit:  dir => ({ opacity: 0, x: dir > 0 ? -60 : 60 }),
+    center: { opacity: 1, x: 0 },
+    exit: dir => ({ opacity: 0, x: dir > 0 ? -60 : 60 }),
   };
 
   return (
@@ -341,7 +417,12 @@ export default function OptionsModal({ isOpen, onClose }) {
                   style={{ scrollbarWidth: "none" }}
                 >
                   {active && current ? (
-                    <current.Panel />
+                    <current.Panel 
+                      onContact={() => setShowContact(true)} 
+                      onPrivacy={() => setShowPrivacy(true)}
+                      onTerms={() => setShowTerms(true)}
+                      onUpgrade={() => setShowUpgrade(true)}
+                    />
                   ) : (
                     MENU.map((item, i) => (
                       <MenuItem
@@ -355,16 +436,49 @@ export default function OptionsModal({ isOpen, onClose }) {
                 </motion.div>
               </AnimatePresence>
             </div>
-
-            {/* Footer */}
-            <div className="px-5 pb-4 text-center border-t border-white/[0.05] pt-3">
-              <span className="text-[10px] text-white/20 tracking-widest uppercase font-medium">
-                v1.0.0 · Animate
-              </span>
-            </div>
           </motion.div>
         </>
       )}
+      {/* Upgrade Modal */}
+      <UpgradeModal isOpen={showUpgrade} onClose={() => setShowUpgrade(false)} />
+
+      {/* Legal Popups */}
+      <AnimatePresence>
+        {showPrivacy && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setShowPrivacy(false)}
+              className="fixed inset-0 z-[190] bg-black/60 backdrop-blur-md"
+            />
+            <PrivacyPolicy onClose={() => setShowPrivacy(false)} />
+          </>
+        )}
+        {showTerms && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setShowTerms(false)}
+              className="fixed inset-0 z-[190] bg-black/60 backdrop-blur-md"
+            />
+            <TermsOfService onClose={() => setShowTerms(false)} />
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Contact Form Popup */}
+      <AnimatePresence>
+        {showContact && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setShowContact(false)}
+              className="fixed inset-0 z-[190] bg-black/60 backdrop-blur-md"
+            />
+            <ContactForm onClose={() => setShowContact(false)} />
+          </>
+        )}
+      </AnimatePresence>
     </AnimatePresence>
   );
 }
